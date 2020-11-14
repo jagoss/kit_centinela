@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "name": "Linux",
+      "defines": [
+        "MBED_BUILD_TIMESTAMP=1520864281.56",
+        "MBED_CONF_RTOS_PRESENT=1",
+        "MBED_TICKLESS"
+      ],
+      "includePath": [
+        "${workspaceRoot}/*",
+        "${workspaceRoot}/mbed-os/*",
+        "/usr/include/c++/8",
+        "/usr/include/x86_64-linux-gnu/c++/8"
+      ],
+      "browse": {
+        "path": ["${workspaceRoot}/*", "${workspaceRoot}/mbed-os/*"]
+      },
+      "compilerPath": "/usr/bin/clang",
+      "cStandard": "c11",
+      "cppStandard": "c++17",
+      "intelliSenseMode": "clang-x64"
+    }
+  ],
+  "version": 4
+}

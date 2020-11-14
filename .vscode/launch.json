@@ -1,0 +1,43 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "cortex-debug",
+      "request": "launch",
+      "name": "Cortex Debug",
+      "cwd": "${workspaceRoot}",
+      "executable": "BUILD\\NUCLEO_L433RC_P\\GCC_ARM\\${workspaceFolderBasename}.elf",
+      "serverpath": "C:\\OpenOCD-20200524-0.10.0\\bin\\openocd.exe",
+      "servertype": "openocd",
+      "configFiles": [
+        "interface\\stlink.cfg",
+        "${workspaceRoot}\\stm32l4x.cfg"
+      ],
+      "device": "STM32L073RZ",
+      "interface": "swd", // or "jtag" - but usually "swd"
+      "serialNumber": "", //if you have more than one J-Link probe add the serial number here
+      "runToMain": true
+      "svdFile": "${workspaceRoot}\\STM32L4R5.svd"
+    }
+  ]
+}
+
+/*{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "cortex-debug",
+      "request": "launch",
+      "name": "Debug Microcontroller",
+      "executable": "BUILD\\NUCLEO_L433RC_P\\GCC_ARM\\${workspaceFolderBasename}.elf",
+      "configFiles": ["${workspaceRoot}\\stm32l4x.cfg"],
+      "cwd": "${workspaceRoot}",
+      "openOCDPath": "C:\\OpenOCD-20200524-0.10.0\\bin\\openocd.exe"
+      //"preLaunchTask": "build-FISHDRONE"
+    }
+  ]
+}
+*/

@@ -1,0 +1,11 @@
+{
+  "files.associations": {
+    "*.cpp": "c",
+    "mbed.h": "c",
+    "mqttsnpacket.h": "c"
+  },
+  "terminal.integrated.commandsToSkipShell": [
+    "\"terminal.integrated.shell.windows\": \"\\\\WINDOWS\\\\system32\\\\WindowsPowerShell\\\\v1.0\\\\powershell.exe\""
+  ],
+  "terminal.integrated.shell.windows": ""
+}

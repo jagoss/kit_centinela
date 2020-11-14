@@ -1,0 +1,55 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "BUILD",
+      "command": "mbed compile -t GCC_ARM -m NUCLEO_L433RC_P; echo BUILD DONE",
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "BUILD&FLASH_ST-LINK_WIN",
+      "command": "mbed compile -t GCC_ARM -m NUCLEO_L433RC_P; st-link_cli -c SWD -P BUILD/NUCLEO_L433RC_P/GCC_ARM/${workspaceFolderBasename}.bin 0x08000000 -V; echo BUILD and FLASH DONE",
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "FLASH_ST-LINK_WIN",
+      "command": "st-link_cli -c SWD -P BUILD/NUCLEO_L433RC_P/GCC_ARM/${workspaceFolderBasename}.bin 0x08000000 -V; echo BUILD and FLASH DONE",
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "TERMINAL",
+      "command": "minicom -D /dev/ttyACM0  -b  115200",
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "BUILD&FLASH_ST-LINK",
+      "command": "mbed compile -t GCC_ARM -m NUCLEO_L433RC_P; st-link_cli -c SWD -P BUILD/NUCLEO_L433RC_P/GCC_ARM/${workspaceFolderBasename}.bin 0x08000000 -V; st-link_cli -c SWD -Rst; echo BUILD and FLASH DONE",
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "FLASH_ST-LINK",
+      "command": "st-link_cli -c SWD -P BUILD/NUCLEO_L433RC_P/GCC_ARM/${workspaceFolderBasename}.bin 0x08000000 -V; st-link_cli -c SWD -Rst; echo FLASH DONE",
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "FLASH_ST-LINK TESTING",
+      "command": "st-link_cli -c SWD LPM -P BUILD/NUCLEO_L433RC_P/GCC_ARM/${workspaceFolderBasename}.bin 0x08000000 -V; st-link_cli -c SWD -Rst; echo FLASH DONE",
+      "problemMatcher": []
+    },
+    {
+      "type": "shell",
+      "label": "CHECK MBED VERSION",
+      "command": "mbed ls",
+      "problemMatcher": []
+    }
+  ]
+}

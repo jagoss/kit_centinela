@@ -1,0 +1,22 @@
+[
+  {
+    "key": "ctrl+k",
+    "command": "workbench.action.tasks.runTask",
+    "args": "sbuild"
+  },
+  {
+    "key": "ctrl+shift+2",
+    "command": "commandId",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "alt+shift+Q",
+    "command": "workbench.action.tasks.runTask",
+    "args": "sbuild"
+  },
+  {
+    "key": "ctrl+shift+k",
+    "command": "workbench.action.tasks.runTask",
+    "args": "sbuild"
+  }
+]
