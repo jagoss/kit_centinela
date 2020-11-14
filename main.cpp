@@ -20,7 +20,6 @@ int height;
 const int kitHeight = 1000;
 unsigned long timeUs = 0;
 char *msg;
-const char *ALERT_MSG = "RAINING";
 Thread eventThread;
 EventQueue queue;
 bool started = false;
@@ -103,10 +102,6 @@ void sendData()
     build_msg_mqtt(height, (unsigned int) seconds, isRaining, kitId);
 }
 
-void sendAlert() {
-    // send ALERT_MSG via mqtt
-}
-
 void messageStartTimer()
 {
     printf("START TIMER!\n");
@@ -130,9 +125,6 @@ void start()
     trigger.write(1);
     ThisThread::sleep_for(0.01);
     trigger.write(0);
-    // if (isRaining == 1) {
-    //     sendAlert();
-    // }
 }
 
 void processMeassures()
@@ -140,15 +132,14 @@ void processMeassures()
     if(started) {
         timer.stop();
         // queue.call(&messageStopTimer);
-        // endTime = timer.elapsed_time();
         timeUs = duration_cast<microseconds>(timer.elapsed_time()).count();
         timer.reset();
         distCm = (timeUs*343)/20000; //disminuir error decimal
         height = kitHeight - distCm;
-        // queue.call(&printTimeDist, timeUs, distCm);
         started = false;
+        // queue.call(&printTimeDist, timeUs, distCm);
         // queue.call(&sendData, distCm);
-        // timeOut.attach(&start, 5s);
+        // timeOut.attach(&start, 15s);
     }
 }
 
@@ -162,23 +153,11 @@ void checkRain()
     }
 }
 
-int main()
-{  
-    set_time(1256729737);
-    voltageRegultator.write(1);
-    printf("LECTURA DE MEDIDAS\n------------------------------\n");
-    // trigger.write(1);
-    // ThisThread::sleep_for(0.002);
-    // trigger.write(0);
-    // eventThread.start(callback(&queue, &EventQueue::dispatch_forever));
-    echo.rise(&startTimer);
-    echo.fall(&processMeassures);
-    initServer();
+void takeAndSendMeassures()
+{
     while(1) {
         printf("ENCENDER SENSOR!\n");
-        trigger.write(1);
-        ThisThread::sleep_for(0.01);
-        trigger.write(0);
+        start();
         ThisThread::sleep_for(15s);
         if(distCm == 0){
             printf("\nPRIMERA LECTURA\n");
@@ -187,6 +166,23 @@ int main()
             sendData();
         }
     }
-    // timeOut.attach(&start, 5s);
+}
+
+int main()
+{  
+    set_time(1256729737);
+    voltageRegultator.write(1);
+    printf("LECTURA DE MEDIDAS\n------------------------------\n------------------------------\n");
+    trigger.write(1);
+    ThisThread::sleep_for(0.002);
+    trigger.write(0);
+    eventThread.start(callback(&queue, &EventQueue::dispatch_forever));
+    echo.rise(&startTimer);
+    echo.fall(&processMeassures);
+    initServer();
+    takeAndSendMeassures();
+    // queue.call_(15s, &start);
+    // timeOut.attach(&start, 15s);
+    // while(1){}
     // build_msg_mqtt(topic_public, height, epoch, kitId);
 }
