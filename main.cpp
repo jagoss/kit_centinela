@@ -9,12 +9,15 @@ BufferedSerial modem_int(PA_9, PA_10, 115200);
 DigitalOut voltageRegultator(PB_12);
 DigitalOut trigger(PB_5);
 AnalogIn raindrop(PC_2);
-DigitalIn isRaining(PA_8);
+DigitalIn raindropDigInput(PA_8);
+int isRaining;
 InterruptIn echo(PC_7);
 LowPowerTimer timer;
 LowPowerTimeout timeOut;
-int kitId = 1;
+const int kitId = 1;
 int distCm = 0;
+int height;
+const int kitHeight = 1000;
 unsigned long timeUs = 0;
 char *msg;
 const char *ALERT_MSG = "RAINING";
@@ -70,13 +73,13 @@ void initServer()
     printf("FIN PROCESO DE CONFIGURACION!\n");
 }
 
-void build_msg_mqtt(int height, unsigned int epoch, int kitId)
+void build_msg_mqtt(int height, unsigned int epoch, int isRaining, int kitId)
 {
     printf("\n-----------------------------------------------------------------\n");  
     printf("\nCOMENZANDO PROCESO DE MENSAJE...\n");
 
     char msg_mqtt[100]; //"{\n\t\"distance\": " + distance_char + ",\n\t\"epoch\": " + epoch_char + "\n}\n";
-    sprintf(msg_mqtt, "{\n\t\"height\": %d,\n\t\"epoch\": %u,\n\t\"kitId\": %d\n}\n", height, epoch, kitId);
+    sprintf(msg_mqtt, "{\n\t\"height\": %d,\n\t\"epoch\": %u,\n\t\"is_raining\": %d,\n\t\"kitId\": %d\n}\n", height, epoch, isRaining, kitId);
 
     printf("\nMENSAJE GENERADO!\n\n");
 
@@ -97,7 +100,7 @@ void printTimeDist(unsigned long timeUs, int dist) {
 void sendData()
 {
     time_t seconds = time(NULL);
-    build_msg_mqtt(distCm, (unsigned int) seconds, kitId);
+    build_msg_mqtt(height, (unsigned int) seconds, isRaining, kitId);
 }
 
 void sendAlert() {
@@ -127,7 +130,7 @@ void start()
     trigger.write(1);
     ThisThread::sleep_for(0.01);
     trigger.write(0);
-    // if (isRaining.read() == 1) {
+    // if (isRaining == 1) {
     //     sendAlert();
     // }
 }
@@ -141,10 +144,21 @@ void processMeassures()
         timeUs = duration_cast<microseconds>(timer.elapsed_time()).count();
         timer.reset();
         distCm = (timeUs*343)/20000; //disminuir error decimal
+        height = kitHeight - distCm;
         // queue.call(&printTimeDist, timeUs, distCm);
         started = false;
         // queue.call(&sendData, distCm);
         // timeOut.attach(&start, 5s);
+    }
+}
+
+void checkRain()
+{
+    if(raindropDigInput.read()) {
+        isRaining = 0;
+    }
+    else {
+        isRaining = 1;
     }
 }
 
@@ -166,7 +180,12 @@ int main()
         ThisThread::sleep_for(0.01);
         trigger.write(0);
         ThisThread::sleep_for(15s);
-        sendData();
+        if(distCm == 0){
+            printf("\nPRIMERA LECTURA\n");
+        } else {
+            checkRain();
+            sendData();
+        }
     }
     // timeOut.attach(&start, 5s);
     // build_msg_mqtt(topic_public, height, epoch, kitId);
