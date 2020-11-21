@@ -22,8 +22,6 @@ int height;
 const int kitHeight = 1000;
 unsigned long timeUs = 0;
 char *msg;
-Thread eventThread;
-EventQueue queue;
 bool started = false;
 
 //Defino la interfaz UART "pc" como salida estándar
@@ -173,15 +171,18 @@ void takeAndSendMeassures()
 
 int main()
 {  
+// Se setea tiempo y se inicializan la     
     set_time(1605614108);
     voltageRegultator.write(1);
     printf("LECTURA DE MEDIDAS\n------------------------------\n------------------------------\n");
     trigger.write(1);
     ThisThread::sleep_for(0.002);
     trigger.write(0);
-    eventThread.start(callback(&queue, &EventQueue::dispatch_forever));
+// Inicializan lector interrupciones
     echo.rise(&startTimer);
     echo.fall(&processMeassures);
+// Inicializa servidor
     initServer();
+// Se toman las medidas
     takeAndSendMeassures();
 }
