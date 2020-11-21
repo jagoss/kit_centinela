@@ -16,6 +16,8 @@ LowPowerTimer timer;
 LowPowerTimeout timeOut;
 const int kitId = 1;
 int distCm = 0;
+int totalCm = 0;
+int meanCm = 0;
 int height;
 const int kitHeight = 1000;
 unsigned long timeUs = 0;
@@ -98,6 +100,7 @@ void printTimeDist(unsigned long timeUs, int dist) {
 
 void sendData()
 {
+    height = kitHeight - meanCm;
     time_t seconds = time(NULL);
     build_msg_mqtt(height, (unsigned int) seconds, isRaining, kitId);
 }
@@ -117,7 +120,6 @@ void startTimer() {
     timer.stop();
     timer.reset();
     timer.start();
-    // queue.call(&messageStartTimer);
 }
 
 void start()
@@ -131,15 +133,10 @@ void processMeassures()
 {
     if(started) {
         timer.stop();
-        // queue.call(&messageStopTimer);
         timeUs = duration_cast<microseconds>(timer.elapsed_time()).count();
         timer.reset();
         distCm = (timeUs*343)/20000; //disminuir error decimal
-        height = kitHeight - distCm;
         started = false;
-        // queue.call(&printTimeDist, timeUs, distCm);
-        // queue.call(&sendData, distCm);
-        // timeOut.attach(&start, 15s);
     }
 }
 
@@ -156,9 +153,15 @@ void checkRain()
 void takeAndSendMeassures()
 {
     while(1) {
+// se toman 3 medidas y se hace el promedio
         printf("ENCENDER SENSOR!\n");
-        start();
-        ThisThread::sleep_for(15s);
+        totalCm = 0;
+        for(int i=0; i<3; i++) {
+            start();
+            ThisThread::sleep_for(5s);
+            totalCm = totalCm + distCm;
+        }
+        meanCm = totalCm/3;
         if(distCm == 0){
             printf("\nPRIMERA LECTURA\n");
         } else {
@@ -170,7 +173,7 @@ void takeAndSendMeassures()
 
 int main()
 {  
-    set_time(1256729737);
+    set_time(1605614108);
     voltageRegultator.write(1);
     printf("LECTURA DE MEDIDAS\n------------------------------\n------------------------------\n");
     trigger.write(1);
@@ -181,8 +184,4 @@ int main()
     echo.fall(&processMeassures);
     initServer();
     takeAndSendMeassures();
-    // queue.call_(15s, &start);
-    // timeOut.attach(&start, 15s);
-    // while(1){}
-    // build_msg_mqtt(topic_public, height, epoch, kitId);
 }
